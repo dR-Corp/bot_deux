@@ -1,0 +1,23 @@
+{
+  "name": "bot_un",
+  "version": "1.0.0",
+  "description": "web wa js bot",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "me",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.6.7",
+    "body-parser": "^1.20.2",
+    "dotenv": "^16.4.1",
+    "express": "^4.18.2",
+    "fs": "^0.0.1-security",
+    "openai": "^4.26.0",
+    "path": "^0.12.7",
+    "qrcode-terminal": "^0.12.0",
+    "whatsapp-web.js": "^1.23.0"
+  }
+}
