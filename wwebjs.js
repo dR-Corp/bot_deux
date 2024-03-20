@@ -1,31 +1,91 @@
 const qrcode = require('qrcode-terminal');
-const { Client, LocalAuth, MessageMedia} = require('whatsapp-web.js');
+const { Client, LocalAuth, RemoteAuth, MessageMedia} = require('whatsapp-web.js');
+const { MongoStore } = require('wwebjs-mongo');
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+dotenv.config();
 
-const client = new Client({
-    authStrategy: new LocalAuth()
-});
+// Local authentication methods
+        // const client = new Client({
+        //     authStrategy: new LocalAuth()
+        // });
+        // client.on('qr', (qr) => {
+        //     qrcode.generate(qr, { small: true });
+        // });
+        // client.on('ready', async () => {
+        //     console.log('Client is ready!');
+        // });
+        // client.initialize();
 
-client.initialize();
+        const connect = async () => {
 
-client.on('qr', (qr) => {
-    qrcode.generate(qr, { small: true });
-});
+            await mongoose.connect(process.env.MONGODB_URI)
+                .then(() => console.log('Connexion à MongoDB réussie !'))
+                .catch(() => console.log('Connexion à MongoDB échouée !'));
 
-client.on('ready', () => {
-    console.log('Client is ready!');
-});
+            const store = new MongoStore({ mongoose: mongoose });
+            const client = new Client({
+                authStrategy: new RemoteAuth({
+                    store: store,
+                    backupSyncIntervalMs: 300000
+                })
+            });
 
-client.on('message', async (message) => {
-    if(message.from != "status@broadcast" && message.from != "22997074355@c.us") {
-        console.log(message.from);
-        console.log(message.body);
-    }
-    else {
-        console.log("IT'S LIKE SOMEONE POST A FUCKING STATUS !");
-        console.log(message.body);
-    }
-});
+            client.on('qr', (qr) => {
+                qrcode.generate(qr, { small: true });
+            });
 
+            client.on('ready', async () => {
+                console.log('Client is ready!');
+            });
+
+            client.on('remote_session_saved', () => {
+                console.log("Remote session saved!");
+            });
+
+            client.initialize();
+
+            module.exports = client
+
+            return client;
+        }
+
+        console.log(connect());;
+            
+
+// Remote authentication methods
+// mongoose.connect(process.env.MONGODB_URI).then(() => {
+
+//     console.log('Connexion à MongoDB réussie !')
+
+//     const store = new MongoStore({ mongoose: mongoose });
+//     const client = new Client({
+//         authStrategy: new RemoteAuth({
+//             store: store,
+//             backupSyncIntervalMs: 300000
+//         })
+//     });
+
+//     client.on('qr', (qr) => {
+//         qrcode.generate(qr, { small: true });
+//     });
+
+//     client.on('ready', async () => {
+//         console.log('Client is ready!');
+//     });
+
+//     client.on('remote_session_saved', () => {
+//         console.log("Remote session saved!");
+//     });
+
+//     client.initialize();
+
+//     module.exports = client
+    
+// }).catch(() => console.log('Connexion à MongoDB échouée !'));;
+
+
+ 
 // Sending Media
 // client.on('message', async (msg) => {
 //     if (msg.body === '!send-media') {
@@ -48,4 +108,4 @@ client.on('message', async (message) => {
 //     }
 // });
 
-module.exports = client
+// module.exports = client

@@ -73,7 +73,7 @@ exports.check_run = async (thread, run, contact) => {
 
     do {
 
-        await new Promise(resolve => setTimeout(resolve, 5000)); // ajust to 5000 after
+        await new Promise(resolve => setTimeout(resolve, 500)); // ajust to 100 after
         const run_checked = await openai.beta.threads.runs.retrieve(
             thread.id,
             run.id
@@ -119,7 +119,7 @@ exports.check_run = async (thread, run, contact) => {
                         }
                     );
                 
-                    console.log("ACTION CALLED", run_tool_submited);
+                    // console.log("ACTION CALLED", run_tool_submited);
                 
                 }
             }
